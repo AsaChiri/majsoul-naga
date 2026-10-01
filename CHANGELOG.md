@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project uses the
 userscript `@version` as its version.
 
+## [1.0.1]
+
+- Ignore the analysis shortcut while editing text, composing input, or using
+  Ctrl/Alt/Meta shortcuts, and respect events already handled by the page.
+- Allow only one conversion/submission at a time and remember successfully
+  submitted replays until the page reloads. Failed attempts remain retryable.
+- Add offline userscript regression tests for keyboard handling and submission
+  state transitions, alongside the converter golden test.
+
 ## [1.0.0]
 
 Initial release.

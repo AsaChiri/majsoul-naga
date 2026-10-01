@@ -20,6 +20,11 @@ Open a replay, press **`s`**, done.
 1. In MahjongSoul, open a **4-player replay**.
 2. Press **`s`**.
 
+The shortcut ignores editable fields and Ctrl/Alt/Meta combinations. Only one
+submission can run at a time. After success, that replay is remembered until the
+page reloads; reload the page to deliberately submit it again. Failed attempts
+can be retried with `s`.
+
 The script captures the game, converts it, splits it into rounds, and POSTs it to
 NAGA's custom analysis. A toast shows progress; the finished report shows up in
 your NAGA reports. The first time, Tampermonkey will ask to allow a connection to
@@ -58,6 +63,10 @@ record fixture (`test/fixtures/`), asserting the tenhou `log` matches the frozen
 expected output. The fixture exercises chi/pon/ankan/kakan,
 riichi, a dealer ron with yaku, a tsumo with honba, and an exhaustive draw with
 negative score deltas.
+
+Offline userscript tests also exercise keyboard handling, replay capture, and
+submission/retry state with mocked browser and Tampermonkey APIs. They never
+contact NAGA or require credentials.
 
 ## Credits
 

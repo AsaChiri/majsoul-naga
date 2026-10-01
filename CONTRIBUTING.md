@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for your interest in improving majsoul-naga! It's a single userscript
-(`majsoul-naga.user.js`) plus a Node golden test.
+(`majsoul-naga.user.js`) plus Node golden and offline userscript tests.
 
 ## Setup
 
@@ -12,7 +12,7 @@ npm run check   # lint + format check + test
 
 Individual scripts:
 
-- `npm test` — run the converter golden test (needs Node)
+- `npm test` — run the converter golden and offline userscript tests (needs Node)
 - `npm run lint` / `npm run lint:fix` — ESLint
 - `npm run format` / `npm run format:check` — Prettier
 

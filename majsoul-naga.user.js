@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MajSoul → NAGA
 // @namespace    https://github.com/AsaChiri/majsoul-naga
-// @version      1.0.0
+// @version      1.0.1
 // @description  Capture the current MahjongSoul 4-player replay and request a NAGA analysis, entirely in-browser.
 // @author       AsaChiri
 // @homepageURL  https://github.com/AsaChiri/majsoul-naga
@@ -892,7 +892,11 @@
     clearTimeout(el._t);
     el._t = setTimeout(() => (el.style.opacity = "0"), ms);
   }
+  let running = false;
+  const submittedReplays = new Set();
   async function run() {
+    if (running) return;
+    running = true;
     try {
       const resBytes = capturedResGameRecord();
       if (!resBytes) {
@@ -903,6 +907,12 @@
       }
       toast("Converting…");
       const rec = decodeRecord(resBytes);
+      // Use the replay ID across recaptures; fall back to the captured bytes if absent.
+      const replayKey = rec.uuid || resBytes.toString();
+      if (submittedReplays.has(replayKey)) {
+        toast("Already submitted to NAGA — check your reports. Reload the page to submit again.", 8000);
+        return;
+      }
       let blob = rec.data;
       if (!blob && rec.dataUrl) {
         toast("Fetching record…");
@@ -929,16 +939,27 @@
       const haihus = toNagaCustom(tenhou);
       toast(`Decoded ${tenhou.log.length} rounds — submitting to NAGA…`, 8000);
       const res = await submitToNaga(haihus, 0, gameType);
+      submittedReplays.add(replayKey);
       toast("Submitted to NAGA ✓ — check your reports at naga.dmv.nico", 8000);
       log("submitted", res);
     } catch (e) {
       toast("Error: " + e.message, 8000);
       logError(e);
+    } finally {
+      // Failures remain retryable, including errors before the request is sent.
+      running = false;
     }
+  }
+
+  function isEditable(el) {
+    return el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
   }
 
   installWsHook();
   document.addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || e.isComposing || e.ctrlKey || e.altKey || e.metaKey) return;
+    const path = e.composedPath ? e.composedPath() : [e.target];
+    if (document.designMode === "on" || isEditable(document.activeElement) || path.some(isEditable)) return;
     if ((e.key === TRIGGER_KEY || e.key === TRIGGER_KEY.toUpperCase()) && !e.repeat) run();
   });
   log("loaded; open a 4-player replay and press '" + TRIGGER_KEY + "'.");
