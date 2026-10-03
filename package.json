@@ -1,6 +1,6 @@
 {
   "name": "majsoul-naga",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Userscript: capture a MahjongSoul replay and request a NAGA analysis (4-player), entirely in-browser",
   "license": "MIT",
   "author": "AsaChiri",

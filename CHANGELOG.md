@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project uses the
 userscript `@version` as its version.
 
-## [1.0.1]
+## [1.0.2]
 
 - Ignore the analysis shortcut while editing text, composing input, or using
   Ctrl/Alt/Meta shortcuts, and respect events already handled by the page.
@@ -12,6 +12,16 @@ userscript `@version` as its version.
   submitted replays until the page reloads. Failed attempts remain retryable.
 - Add offline userscript regression tests for keyboard handling and submission
   state transitions, alongside the converter golden test.
+
+## [1.0.1]
+
+### Fixed
+
+- NAGA rejected whole games containing a kiriage mangan (4han30fu / 3han60fu)
+  with `jsonが間違っています`: the score string is now tenhou's plain fu/han form
+  (`30符4飜2000-4000点`) instead of the non-tenhou `切り上げ満貫`.
+- 13-sided kokushi is now labelled `国士無双１３面` (tenhou's name), which NAGA's
+  yaku check accepts.
 
 ## [1.0.0]
 

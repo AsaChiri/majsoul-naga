@@ -48,4 +48,17 @@ if (payload.length !== got.length) {
   process.exit(1);
 }
 
+// kiriage mangan must use tenhou's plain fu/han label; NAGA rejects "切り上げ満貫"
+const kiriage = win.__majsoulNaga.scoreString({
+  tsumo: true,
+  oya: false,
+  han: 4,
+  fu: 30,
+  point: { tsumo: 2000, tsumo_oya: 4000, ron: 0, oya: false },
+});
+if (kiriage !== "30符4飜2000-4000点") {
+  console.error(`FAIL: kiriage score string: ${kiriage}`);
+  process.exit(1);
+}
+
 console.error(`ok - converter matches fixture (${got.length} rounds)`);
