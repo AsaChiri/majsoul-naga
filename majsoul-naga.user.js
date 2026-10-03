@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MajSoul → NAGA
 // @namespace    https://github.com/AsaChiri/majsoul-naga
-// @version      1.0.0
+// @version      1.0.1
 // @description  Capture the current MahjongSoul 4-player replay and request a NAGA analysis, entirely in-browser.
 // @author       AsaChiri
 // @homepageURL  https://github.com/AsaChiri/majsoul-naga
@@ -194,7 +194,6 @@
     sanbaiman: "三倍満",
     yakuman: "役満",
     kazoe: "数え役満",
-    kiriage: "切り上げ満貫",
   };
   const ABORT = { 1: "九種九牌", 2: "四風連打", 3: "四家立直", 4: "四開槓", 5: "三家和" };
   const YAKU_NAMES = {
@@ -246,7 +245,7 @@
     46: "八連荘",
     47: "純正九蓮宝燈",
     48: "四暗刻単騎",
-    49: "国士無双十三面待ち",
+    49: "国士無双１３面", // tenhou's label; NAGA rejects unknown yaku names
     50: "大四喜",
     51: "燕返し",
     52: "槓振り",
@@ -307,15 +306,17 @@
     let pts;
     if (w.tsumo) pts = w.oya ? `${w.point.tsumo}点∀` : `${w.point.tsumo}-${w.point.tsumo_oya}点`;
     else pts = `${w.point.ron}点`;
+    const fuhan = `${w.fu}符${w.han}飜${pts}`;
     const lv = pointLevel(w.point);
-    if (lv === null) return `${w.fu}符${w.han}飜${pts}`;
-    let prefix;
-    if (lv === "yakuman") prefix = w.han >= 13 ? LIMIT.kazoe : LIMIT.yakuman;
-    else if (lv === "mangan") {
+    if (lv === null) return fuhan;
+    if (lv === "yakuman") return (w.han >= 13 ? LIMIT.kazoe : LIMIT.yakuman) + pts;
+    if (lv === "mangan") {
+      // Kiriage mangan (4han30fu / 3han60fu) has no tenhou label, and NAGA rejects
+      // the whole order ("jsonが間違っています") on "切り上げ満貫" — use plain fu/han.
       const tm = w.han >= 5 || (w.han >= 4 && w.fu >= 40) || (w.han >= 3 && w.fu >= 70);
-      prefix = tm ? LIMIT.mangan : LIMIT.kiriage;
-    } else prefix = LIMIT[lv];
-    return prefix + pts;
+      return tm ? LIMIT.mangan + pts : fuhan;
+    }
+    return LIMIT[lv] + pts;
   }
 
   // ---- game parser (port of records.py) ---------------------------------
@@ -692,7 +693,7 @@
   }
 
   // expose pure core for testing
-  window.__majsoulNaga = { decode, decodeRecord, convert, recordToTenhou, toNagaCustom };
+  window.__majsoulNaga = { decode, decodeRecord, convert, recordToTenhou, toNagaCustom, scoreString };
 
   // ---- NAGA submit (uses your NAGA browser session) ---------------------
   function gmCookieList(details) {
